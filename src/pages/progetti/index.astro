@@ -1,0 +1,54 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const posts = Object.values(import.meta.glob('./*.md', { eager: true }));
+
+// Ordinamento: usa repairSort
+posts.sort((a: any, b: any) => {
+  const dateA = new Date(a.frontmatter.repairSort || a.frontmatter.date || 0).valueOf();
+  const dateB = new Date(b.frontmatter.repairSort || b.frontmatter.date || 0).valueOf();
+  return dateB - dateA;
+});
+---
+
+<Layout title="Vince: Archivio progetti"> <h1>Archivio progetti</h1>
+  <p>Elenco di alcuni dei miei progetti più recenti.</p>
+
+  <ul class="block-list">
+    {posts.map((post: any) => (
+      <li class="block-item">
+        <a href={post.url}>
+          <span class="block-title">{post.frontmatter.title}</span>
+          
+          <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap;">
+            
+            {/* Esecuzione */}
+            {post.frontmatter.repairDate && (
+              <div style="display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: #888; font-family: var(--font-mono);" title="Data esecuzione">
+                <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/></svg>
+                {post.frontmatter.repairDate}
+              </div>
+            )}
+
+            {/* Stesura */}
+            {post.frontmatter.date && (
+              <div style="display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: #888; font-family: var(--font-mono);" title="Data stesura">
+                <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                {new Date(post.frontmatter.date).toLocaleDateString('it-IT')}
+              </div>
+            )}
+            
+            {/* Tags */}
+            {post.frontmatter.tags && (
+              <div style="display: flex; gap: 0.4rem;">
+                {post.frontmatter.tags.map((tag: string) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Layout>
